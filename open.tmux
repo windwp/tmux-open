@@ -26,12 +26,7 @@ is_cygwin() {
 }
 
 get_editor_from_the_env_var() {
-	if [ -z $EDITOR ]; then
-		# $EDITOR not set, fallback
-		echo "vi"
-	else
-		echo "$EDITOR"
-	fi
+    echo 'neovim_remote_open.sh'
 }
 
 command_generator() {
@@ -76,11 +71,12 @@ generate_open_search_command() {
 # 1. write a command to the terminal, example: 'vim -- some_file.txt'
 # 2. invoke the command by pressing enter/C-m
 generate_editor_command() {
-	local environment_editor=$(get_editor_from_the_env_var)
-	local editor=$(get_tmux_option "$open_editor_override" "$environment_editor")
+    local editor="neovim_remote_open.sh"
 	# vim freezes terminal unless there's the '--' argument. Other editors seem
 	# to be fine with it (textmate [mate], light table [table]).
-	echo "xargs -I {} tmux send-keys '$editor -- \"{}\"'; tmux send-keys 'C-m'"
+    echo "xargs -I {} tmux run-shell -b ' $editor \"{}\" > /dev/null'"
+
+	# echo "xargs -I {} tmux send-keys '$editor  \"{}\"'; tmux send-keys 'C-m'"
 }
 
 set_copy_mode_open_bindings() {
